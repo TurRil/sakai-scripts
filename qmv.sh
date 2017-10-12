@@ -37,9 +37,8 @@ cd $mywd/trunk
 
 if [[ "$THREADS" > 2 ]] ; then
     echo Compiling with $THREADS threads
-    mvn -T $THREADS e -Dmaven.test.skip=true -Dmaven.tomcat.home=$tomcatdir $goals
+    mvn -T $THREADS -e -Dsakai.cleanup=true -Dmaven.test.skip=true -Dmaven.tomcat.home=$tomcatdir $goals
 else
     echo Compiling with 2 threads
-    mvn -T 2 -e -Dmaven.test.skip=true -Dmaven.tomcat.home=$tomcatdir $goals
+    mvn -T 2 -e -Dsakai.cleanup=true -Dmaven.test.skip=true -Dmaven.tomcat.home=$tomcatdir $goals
 fi
-
