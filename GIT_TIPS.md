@@ -163,3 +163,95 @@ Pulling Tags
 git fetch -all
 git tag -l
 git checkout 11.0
+
+
+Long Lived Development Branches
+-------------------------------
+
+How to work for a while in a development branch while staying in touch
+with master so the merge always works and so you can pause for a moment
+and fix a bug in master and get that merged.
+
+In this example SAK-42 will be the development branch.
+
+Prepare - catch local and fork up with master:
+
+git checkout master
+git pull upstream master
+git push origin master
+
+Lets start the dev branch:
+
+get checkout -b SAK-42
+# Start your work
+git commit
+git push origin SAK-42
+# Do more work
+git commit
+git push origin SAK-42
+
+Time passes - lets stay current with master:
+
+git checkout master
+git pull upstream master
+git push origin master
+
+git checkout SAK-42
+git pull upstream master
+git push origin SAK-42
+
+Need to pause and fix SAK-1000:
+
+git checkout master
+git checkout -b SAK-1000
+# Make fixes
+git commit -a
+git push origin SAK-1000
+
+Once SAK-1000 it approved and merged into master - catch
+both origin SAK-42 and origin master up using the
+above commands.
+
+Go back to working on SAK-42:
+
+git checkout SAK-42
+# Do more work
+git commit
+git push origin SAK-42
+
+
+From Sam and Noah on the Feature Branch
+---------------------------------------
+
+Here is how I like to feel safe in my important feature branch:
+
+# Make sure there is a copy of my feature branch if things go really terrible
+git push origin feature-branch
+
+# Pull all updates from Github
+git fetch --all
+
+# Now attempt to rebase my feature branch with the upstream changes
+# I may need to resolve conflicts if someone else is editing the same files
+git rebase upstream/master
+
+# If all is good, I can update Github against with my changes
+# This needs --force per Noah
+git push --force origin SAK-xxx
+
+# Added by Chuck
+git checkout master
+git push origin master
+git checkout feature-branch
+
+
+Noah Notes
+
+Now, my editorial on when to do repeated merges to your branch and when to rebase...
+
+Basically, the more involved the change and the longer the timeframe, the less likely a rebase is going to work smoothly. The reason is that you have to roll the new base commit (say tip of master) through all of your commits. In some situations where you are changing the same area in step fashion, you have to reconcile current master with every stage of your branch. You can't make it like it should be now that you have seen the final answer, but show your work all the way through from a different starting point.
+
+My rule of thumb is that if I'm messing with a rebase for more than 10 minutes, I cut bait and fish elsewhere with a plain merge of latest master to the top of my branch. That merge may still be complicated, but it's one shot. Reconcile the latest of both, and it's ready to merge... no chance of maybe needing to resolve through 10 more intermediate commits.
+
+I prefer to rebase but I bail out pretty quickly if it goes wacky.
+
